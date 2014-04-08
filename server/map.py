@@ -269,6 +269,9 @@ class Map:
     def minify_path(self, path):
         """
         Minify a path such that points on the same line are removed.
+        This is limited when travelling diagonally. It's not broken, 
+        but it tends to go off road.
+        e.g. http://localhost:5000/route?location=(53.65488,-113.33914)&location=(53.65035,-113.35026)&location=(53.64727,-113.35890)
         """
         
         def get_direction(start, end):

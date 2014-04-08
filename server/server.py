@@ -67,6 +67,8 @@ def route():
 def fetch_route(locations):
     """
     Find an optimized route through the given points.
+    Takes in a list of coordinates, each of which is a tuple
+    in the format (lat, lng)
     """
     # process the parameters
     points = map(process, locations)
@@ -77,7 +79,7 @@ def fetch_route(locations):
 def fetch_nearby_foursquare_locations(location, query=''):
     """
     Returns nearby location fetched from foursquare.
-    Takes in a coordinate, which is a tuple of (lat, lng)
+    Takes in a coordinate, which is a tuple in the format (lat, lng)
     """
     ll = u'' + str(location[0]) + ',' + str(location[1])
     #10km radius
