@@ -90,7 +90,7 @@
                         // one can customize markers by adding simplestyle properties
                         // http://mapbox.com/developers/simplestyle/
                         'marker-size': 'small',
-                        'marker-color': '#0CBADF'
+                        'marker-color': '#0099cc'
                     }
                 }
                 {% if not loop.last %}
@@ -114,11 +114,11 @@
 	    featureLayer.on('click',function(e) {		
 		if(e.layer.feature.properties['selected']) {
 		    e.layer.feature.properties['selected'] = false;	
-     		    e.layer.feature.properties['marker-color'] = '#0CBADF';	
+     		    e.layer.feature.properties['marker-color'] = '#0099cc';	
 		}
 		else {
 		    e.layer.feature.properties['selected'] = true;	
-     		    e.layer.feature.properties['marker-color'] = '#087d96';	
+     		    e.layer.feature.properties['marker-color'] = '#006080';	
 		}
 	    	featureLayer.setGeoJSON(geoJson);
 		console.log(e);

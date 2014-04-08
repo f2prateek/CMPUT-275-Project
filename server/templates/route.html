@@ -44,7 +44,7 @@
                         title: {{ point[0]|tojson|safe }} + ',' + {{ point[1]|tojson|safe }},
                         // http://mapbox.com/developers/simplestyle/
                         'marker-size': 'small',
-                        'marker-color': '#0CBADF'
+                        'marker-color': '#0099cc'
                     }
                 }
                 {% if not loop.last %}
@@ -78,7 +78,13 @@
                         // http://mapbox.com/developers/simplestyle/
                         'marker-size': 'large',
                     	'marker-symbol': 'star-stroked',
-                    	'marker-color': '#8787CB'
+                        {% if loop.first %}
+                    	'marker-color': '#669900'
+                        {% elif loop.last %}
+                        'marker-color': '#cc0000'
+                        {% else %}
+                        'marker-color': '#9933cc'
+                        {% endif %}
                     }
                 }
                 {% if not loop.last %}
