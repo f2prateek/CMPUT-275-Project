@@ -71,7 +71,6 @@ def fetch_route(locations):
     # process the parameters
     points = map(process, locations)
     path = graphMap.find_optimized_path(points)
-    debug(path)
     path = graphMap.minify_path(path['path'])
     return graphMap.get_path(path)
 
