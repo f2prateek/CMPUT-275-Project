@@ -248,7 +248,6 @@ class Map:
             vertices.remove(current)
             join_path(greedy_path, nearest_path['path'])
 
-        #todo: fix bug where first vertex is repeated twice
         return {'path':greedy_path, 'length':len(greedy_path)}
 
     def get_path(self, path):
@@ -271,7 +270,6 @@ class Map:
         """
         Minify a path such that points on the same line are removed.
         """
-        min_path = list()
         def get_direction(start, end):
             """
             Get the cardinal direction to travel in between two coordinates.
@@ -337,16 +335,18 @@ class Map:
 
             return (turn, new_direction)
         
-        last_street = self._streetnames[(path[0], path[1])]
+        min_path = list()
         min_path.append(path[0])
-
-        for i in range(1, len(path) - 1):
-            start = path[i]
-            end = path[i+1]
-            current = self._streetnames[(start, end)]
-            if current != last_street and current != None:
-                bearing = calculate_turn(path[i-1], start, end)
-                min_path.append(end)
-            last_street = current
+        
+        current_direction = get_direction(path[0], path[1])
+        
+        # iterate over all except first and last
+        for i in range(1, len(path) - 2):
+            new_direction = get_direction(path[i], path[i+1])
+            if current_direction != new_direction:
+                min_path.append(path[i])
+            current_direction = new_direction
+            
+        min_path.append(path[len(path)-1])
             
         return min_path

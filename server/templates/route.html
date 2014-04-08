@@ -53,7 +53,6 @@
                 {% endfor %}
             ]; 
             var featureLayer = L.mapbox.featureLayer(geoJson).addTo(map);
-            map.fitBounds(featureLayer.getBounds());
             var polyline = L.polyline([]).addTo(map);
             // For each point in the map.featureLayer, grab its latitude and longitude
             // values and add them to the line.
@@ -93,6 +92,7 @@
                 {% endfor %}
             ];
             var locationLayer = L.mapbox.featureLayer(locations).addTo(map);
+            map.fitBounds(locationLayer.getBounds());
             locationLayer.on('mouseover', function(e) {
                 e.layer.openPopup();
             });
