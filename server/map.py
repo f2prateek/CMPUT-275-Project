@@ -33,7 +33,7 @@ def join_path(dest, source):
         dest = source
     else:
         # disregard the first vertex, it will be the same as the last vertex from earlier.
-        dest.extend(source)
+        dest.extend(source[1:])
 
     return dest
 
@@ -266,3 +266,87 @@ class Map:
           points.append((process(self._location[v][0]), process(self._location[v][1])))
 
         return {'length': len(points), 'path': points}
+    
+    def minify_path(self, path):
+        """
+        Minify a path such that points on the same line are removed.
+        """
+        min_path = list()
+        def get_direction(start, end):
+            """
+            Get the cardinal direction to travel in between two coordinates.
+
+            This generalizes the map into a cartesian plane as we
+            did for distance.
+            """
+            # get the deltas
+            dy = self._location[end][1] - self._location[start][1]
+            dx = self._location[end][0] - self._location[start][0]
+
+            # use the pair with the greater delta for direction
+            if abs(dy) > abs(dx):
+                # use longitude
+                if dy < 0 :
+                    return 'south'
+                else:
+                    return 'north'
+            else:
+                # use latitude
+                if dx < 0:
+                    return 'west'
+                else:
+                    return 'east'
+
+        def calculate_turn(start, mid, end):
+            """
+            Returns a tuple containing the turn to make and direction to
+            follow if you're traveling in a currection of start to mid,
+            and want to head to end.
+            start and mid give us the direction we're currently in, to help us
+            calculate the turn to make to reach end.
+            mid and end give us the direction to go in.
+
+            TODO:
+            * use constants for cardinal directions here and in get_direction
+            * we may, already have current_direction from the last calculation,
+            reuse these for speed
+            """
+            current_direction = get_direction(start, mid)
+            new_direction = get_direction(mid, end)
+
+            if current_direction == 'west':
+                if new_direction == 'north':
+                    turn = 'right'
+                else:
+                    turn = 'left'
+            elif current_direction == 'east':
+                if new_direction == 'north':
+                    turn = 'left'
+                else:
+                    turn = 'right'
+            elif current_direction == 'north':
+                if new_direction == 'east':
+                    turn = 'right'
+                else:
+                    turn = 'left'
+            else:
+                if new_direction == 'east':
+                    turn = 'left'
+                else:
+                    turn = 'right'
+
+            return (turn, new_direction)
+        
+        last_street = self._streetnames[(path[0], path[1])]
+        min_path.append(path[0])
+
+        for i in range(1, len(path) - 1):
+            start = path[i]
+            end = path[i+1]
+            current = self._streetnames[(start, end)]
+            if current != last_street and current != None:
+                bearing = calculate_turn(path[i-1], start, end)
+                min_path.append(end)
+            last_street = current
+            
+        return min_path

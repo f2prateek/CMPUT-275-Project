@@ -71,7 +71,9 @@ def fetch_route(locations):
     # process the parameters
     points = map(process, locations)
     path = graphMap.find_optimized_path(points)
-    return graphMap.get_path(path['path'])
+    debug(path)
+    path = graphMap.minify_path(path['path'])
+    return graphMap.get_path(path)
 
 def fetch_nearby_foursquare_locations(location, query=''):
     """
