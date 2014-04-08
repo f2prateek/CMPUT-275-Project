@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=utf-8 />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Router</title>
+
+        <!-- Bootstrap -->      
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+        <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
+
+        <style>
+            body { 
+                margin:0; 
+                padding:0; 
+            }
+            #map { 
+                position:absolute; 
+                top:0; 
+                bottom:0; 
+                width:100%; 
+            }
+
+            #geolocate {
+                background: #fff;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 158px;
+                margin-left: -80px;
+                z-index: 1000;
+                font: 13px/18px;
+                text-align: center;
+                padding: 10px 0;
+                color: #3C4E5A;
+                display: block;
+                border: 1px solid #BBB;
+                -webkit-border-radius: 3px;
+                border-radius: 3px;
+            }
+
+            #geolocate:hover {
+                background: #ECF5FA;
+            }
+            
+            #query {
+                background: #fff;
+                position: absolute;
+                top: 5%;
+                right: 10%;
+                width: 158px;
+                margin-left: -80px;
+                z-index: 1000;
+                font: 13px/18px;
+                text-align: center;
+                padding: 10px 0;
+                color: #3C4E5A;
+                display: block;
+                border: 1px solid #BBB;
+                -webkit-border-radius: 3px;
+                border-radius: 3px;
+            }
+
+            #query:hover {
+                background: #ECF5FA;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='map'></div>
+        <a href='#' id='geolocate'>Find me</a>
+        <form action="{{ url_for('venues') }}" method=get id="form">
+            <!-- Hack to append locations in the get request url -->
+            <input type="hidden" name="location" value="" id="locationForm"/>
+            <input class="form-control input-sm" type="text" id="query" placeholder="Query" name="query" disabled>
+        </form>
+
+        <script>
+            var map = L.mapbox.map('map', 'examples.map-9ijuk24y');
+            var geolocate = document.getElementById('geolocate');
+            var query = document.getElementById('query');
+            var locationForm = document.getElementById('locationForm');
+
+            // This uses the HTML5 geolocation API, which is available on
+            // most mobile browsers and modern browsers, but not in Internet Explorer
+            //
+            // See this chart of compatibility for details:
+            // http://caniuse.com/#feat=geolocation
+            if (!navigator.geolocation) {
+                geolocate.innerHTML = 'geolocation is not available';
+            } else {
+                geolocate.onclick = function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    map.locate();
+                };
+            }
+
+            // Once we've got a position, zoom and center the map
+            // on it, and add a single marker.
+            map.on('locationfound', function(e) {
+                map.fitBounds(e.bounds);
+
+                map.featureLayer.setGeoJSON({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [e.latlng.lng, e.latlng.lat]
+                    },
+                    properties: {
+                        title: 'You are here!',
+                        'marker-color': '#8787CB',
+                        'marker-symbol': 'star-stroked',
+                        url: {{ url_for('venues')|tojson|safe }} + '?location=('+e.latlng.lat+','+e.latlng.lng+')'
+                    }
+                });
+
+                map.featureLayer.on('click', function(e) {
+                    e.layer.unbindPopup();
+                    window.location.href = e.layer.feature.properties.url;
+                });
+
+                // And hide the geolocation button
+                geolocate.parentNode.removeChild(geolocate);
+                // Enable the query input
+                query.removeAttribute('disabled');
+                // Set the location parameter for our form
+                locationForm.setAttribute('value', '('+e.latlng.lat+','+e.latlng.lng+')');
+            });
+
+            // If the user chooses not to allow their location
+            // to be shared, display an error message.
+            map.on('locationerror', function() {
+                geolocate.innerHTML = 'position could not be found';
+            });
+        </script>
+
+    </body>
+</html>
