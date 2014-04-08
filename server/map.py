@@ -270,6 +270,7 @@ class Map:
         """
         Minify a path such that points on the same line are removed.
         """
+        
         def get_direction(start, end):
             """
             Get the cardinal direction to travel in between two coordinates.
@@ -294,46 +295,6 @@ class Map:
                     return 'west'
                 else:
                     return 'east'
-
-        def calculate_turn(start, mid, end):
-            """
-            Returns a tuple containing the turn to make and direction to
-            follow if you're traveling in a currection of start to mid,
-            and want to head to end.
-            start and mid give us the direction we're currently in, to help us
-            calculate the turn to make to reach end.
-            mid and end give us the direction to go in.
-
-            TODO:
-            * use constants for cardinal directions here and in get_direction
-            * we may, already have current_direction from the last calculation,
-            reuse these for speed
-            """
-            current_direction = get_direction(start, mid)
-            new_direction = get_direction(mid, end)
-
-            if current_direction == 'west':
-                if new_direction == 'north':
-                    turn = 'right'
-                else:
-                    turn = 'left'
-            elif current_direction == 'east':
-                if new_direction == 'north':
-                    turn = 'left'
-                else:
-                    turn = 'right'
-            elif current_direction == 'north':
-                if new_direction == 'east':
-                    turn = 'right'
-                else:
-                    turn = 'left'
-            else:
-                if new_direction == 'east':
-                    turn = 'left'
-                else:
-                    turn = 'right'
-
-            return (turn, new_direction)
         
         min_path = list()
         min_path.append(path[0])
