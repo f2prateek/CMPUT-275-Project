@@ -27,8 +27,8 @@
 
         <script>
             var map = L.mapbox.map('map', 'f2prateek.hnbdc587');    	
-	
-	    var geoJson = [
+
+            var geoJson = [
                 {% for point in path %}
                 {
                     // this feature is in the GeoJSON format: see geojson.org
@@ -42,10 +42,10 @@
                     },
                     properties: {
                         title: {{ point[0]|tojson|safe }} + ',' + {{ point[1]|tojson|safe }},
-                        // http://mapbox.com/developers/simplestyle/
-                        'marker-size': 'small',
-                        'marker-color': '#0099cc'
-                    }
+                // http://mapbox.com/developers/simplestyle/
+                'marker-size': 'small',
+                'marker-color': '#0099cc'
+                }
                 }
                 {% if not loop.last %}
                 ,
@@ -61,7 +61,7 @@
                 polyline.addLatLng(l.getLatLng());
             });
 
-	    var locations = [
+            var locations = [
                 {% for location in locations %}
                 {
                     // this feature is in the GeoJSON format: see geojson.org
@@ -77,29 +77,29 @@
                         title: {{ location[0]|tojson|safe }} + ',' + {{ location[1]|tojson|safe }},
                         // http://mapbox.com/developers/simplestyle/
                         'marker-size': 'large',
-                    	'marker-symbol': 'star-stroked',
+                        'marker-symbol': 'star-stroked',
                         {% if loop.first %}
-                    	'marker-color': '#669900'
+                        'marker-color': '#669900'
                         {% elif loop.last %}
                         'marker-color': '#cc0000'
                         {% else %}
                         'marker-color': '#9933cc'
                         {% endif %}
-                    }
+                        }
                 }
                 {% if not loop.last %}
                 ,
                 {% endif %}
                 {% endfor %}
             ];
-	    var locationLayer = L.mapbox.featureLayer(locations).addTo(map);
-	    locationLayer.on('mouseover', function(e) {
-		e.layer.openPopup();
-	    });
-	    locationLayer.on('mouseout', function(e) {
-		e.layer.closePopup();
-	    });
-            
+            var locationLayer = L.mapbox.featureLayer(locations).addTo(map);
+            locationLayer.on('mouseover', function(e) {
+                e.layer.openPopup();
+            });
+            locationLayer.on('mouseout', function(e) {
+                e.layer.closePopup();
+            });
+
         </script>
 
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

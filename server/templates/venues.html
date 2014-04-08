@@ -49,10 +49,10 @@
         <a href='#' id='route'>Find a route</a>
 
         <script>
-	    var route = document.getElementById('route');
+            var route = document.getElementById('route');
             var map = L.mapbox.map('map', 'f2prateek.hnbdc587')
-                .setView([ {{ location[0] }}, {{ location[1] }}], 10);
-            
+            .setView([ {{ location[0] }}, {{ location[1] }}], 10);
+
             L.mapbox.featureLayer({
                 // this feature is in the GeoJSON format: see geojson.org
                 // for the full specification
@@ -73,7 +73,7 @@
                 }
             }).addTo(map);
 
-	    var geoJson = [
+            var geoJson = [
                 {% for venue in venues %}
                 {
                     // this feature is in the GeoJSON format: see geojson.org
@@ -87,53 +87,53 @@
                     },
                     properties: {
                         title: {{ venue['name']|tojson|safe }},
-                        // one can customize markers by adding simplestyle properties
-                        // http://mapbox.com/developers/simplestyle/
-                        'marker-size': 'small',
-                        'marker-color': '#0099cc'
-                    }
+                    // one can customize markers by adding simplestyle properties
+                    // http://mapbox.com/developers/simplestyle/
+                    'marker-size': 'small',
+                    'marker-color': '#0099cc'
+                }
                 }
                 {% if not loop.last %}
                 ,
                 {% endif %}
                 {% endfor %}
             ];
-            
+
             var featureLayer = L.mapbox.featureLayer(geoJson).addTo(map);
             //Trying to center the marker causes the map to not be displayed in certain cases
             //e.g. cupcake, sobeys, safeway
             //markers are still displayed, but the map isn't
             //map.fitBounds(featureLayer.getBounds());
-	    featureLayer.on('mouseover', function(e) {
-		e.layer.openPopup();
-	    });
-	    featureLayer.on('mouseout', function(e) {
-		e.layer.closePopup();
-	    });
+            featureLayer.on('mouseover', function(e) {
+                e.layer.openPopup();
+            });
+            featureLayer.on('mouseout', function(e) {
+                e.layer.closePopup();
+            });
 
-	    featureLayer.on('click',function(e) {		
-		if(e.layer.feature.properties['selected']) {
-		    e.layer.feature.properties['selected'] = false;	
-     		    e.layer.feature.properties['marker-color'] = '#0099cc';	
-		}
-		else {
-		    e.layer.feature.properties['selected'] = true;	
-     		    e.layer.feature.properties['marker-color'] = '#006080';	
-		}
-	    	featureLayer.setGeoJSON(geoJson);
-		console.log(e);
-	    });
+            featureLayer.on('click',function(e) {		
+                if(e.layer.feature.properties['selected']) {
+                    e.layer.feature.properties['selected'] = false;	
+                    e.layer.feature.properties['marker-color'] = '#0099cc';	
+                }
+                else {
+                    e.layer.feature.properties['selected'] = true;	
+                    e.layer.feature.properties['marker-color'] = '#006080';	
+                }
+                featureLayer.setGeoJSON(geoJson);
+                console.log(e);
+            });
 
-	    route.onclick = function (e) {
-		var url = {{ url_for('route')|tojson|safe }} + "?location=(" + {{ location[0]|tojson|safe }} + "," + {{ location[1]|tojson|safe }} + ")";
-                for (var i = 0; i < geoJson.length; i++) {
-		    var point = geoJson[i];
-		    if (point.properties['selected']) {
-			// coordinates are in lng, lat format, url should be in lat, lng
-			url = url + "&location=(" + point.geometry.coordinates[1] + "," + point.geometry.coordinates[0] + ")"
-		    }
-		}
-		window.location.href = url;
+            route.onclick = function (e) {
+                var url = {{ url_for('route')|tojson|safe }} + "?location=(" + {{ location[0]|tojson|safe }} + "," + {{ location[1]|tojson|safe }} + ")";
+            for (var i = 0; i < geoJson.length; i++) {
+                var point = geoJson[i];
+                if (point.properties['selected']) {
+                    // coordinates are in lng, lat format, url should be in lat, lng
+                    url = url + "&location=(" + point.geometry.coordinates[1] + "," + point.geometry.coordinates[0] + ")"
+                }
+            }
+            window.location.href = url;
             };
         </script>
 
