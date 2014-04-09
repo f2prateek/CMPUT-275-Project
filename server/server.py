@@ -19,8 +19,7 @@ def api_venues():
     query = request.args.get('query', '')
     
     response = fetch_nearby_foursquare_locations(location, query)
-    parsed_response = json.dumps(response)
-    return str(parsed_response)
+    return json.dumps(response)
 
 @app.route("/api/route")
 def api_route():
@@ -31,7 +30,15 @@ def api_route():
     /route?location=(53.65488,-113.33914)&location=(53.65035,-113.35026)&location=(53.64727,-113.35890)
     """
     locations = request.values.getlist('location')
-    return str(fetch_route(locations))
+    
+    route = fetch_route(locations)
+    def process(location):
+        return {'lat':location[0], 'lng':location[1]}
+    path = map(process, route['path'])
+    
+    response = {'path':path, 'length':len(path)}
+    
+    return json.dumps(response)
 
 @app.route("/")
 def home():
@@ -100,5 +107,5 @@ def debug(msg):
     app.logger.debug(str(msg))
 
 if __name__ == "__main__":
-    #app.run(host='0.0.0.0')
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
+    #app.run(debug=True)
