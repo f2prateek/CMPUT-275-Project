@@ -20,7 +20,7 @@ public class FoursquareFactory {
   public static Foursquare get() {
     if (instance == null) {
       RestAdapter restAdapter =
-          new RestAdapter.Builder().setEndpoint("http://192.168.1.67:5000/api")
+          new RestAdapter.Builder().setEndpoint("https://vast-lowlands-8551.herokuapp.com/api")
               .setLogLevel(RestAdapter.LogLevel.FULL)
               .build();
       instance = restAdapter.create(Foursquare.class);

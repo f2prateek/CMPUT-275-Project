@@ -38,6 +38,7 @@ For future invocations, just execute the bundled `run.sh` file
 
 ### Deploy to heroku
 From the root of the project, run `git subtree push --prefix server heroku master`
+With my credentials, the app is accessible at https://vast-lowlands-8551.herokuapp.com
 
 ## Android Client
 
@@ -46,6 +47,10 @@ http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html
 
 ### Install Android SDK and dependencies
 https://developer.android.com/tools/index.html
+
+### Setup Android Map SDK
+Speicifically, setup the signing key for maps
+https://developers.google.com/maps/documentation/android/
 
 ### Build and Install
 run `./gradlew clean build installDebug`
