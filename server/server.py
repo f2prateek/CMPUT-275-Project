@@ -17,8 +17,11 @@ def api_venues():
     Get a list of venues from Foursquare.
     /venues?location=(44.3,37.2)
     """
+    # Parse arguments
     location = eval(request.args.get('location', '(0, 0)'))
     query = request.args.get('query', '')
+    
+    # Fetch venues
     response = fetch_nearby_foursquare_locations(location, query)
     return json.dumps(response)
 
@@ -30,13 +33,18 @@ def api_route():
     /route?location=(53.65488,-113.33914)&location=(53.64727,-113.35890)
     /route?location=(53.65488,-113.33914)&location=(53.65035,-113.35026)&location=(53.64727,-113.35890)
     """
+    # Parse arguments
     locations = request.values.getlist('location')
+    
+    # Fetch an optimized route through the locations
     route = fetch_route(locations)
-
+    
+    # Maps a location to a dictionary for clients
     def process(location):
         return {'lat': location[0], 'lng': location[1]}
 
     path = map(process, route['path'])
+    
     response = {'path': path, 'length': len(path)}
     return json.dumps(response)
 
@@ -63,6 +71,9 @@ def route():
     locations = request.values.getlist('location')
     path = fetch_route(locations)['path']
 
+    # Maps a location provided by query parameters into a tuple
+    # doesn't need to prcoessed by the graphMap so we don't reuse
+    # the global prcess function
     def process(location):
         return eval(location)
 
@@ -72,8 +83,9 @@ def route():
 def fetch_route(locations):
     """
     Find an optimized route through the given points.
-    Takes in a list of coordinates, each of which is a tuple
-    in the format (lat, lng)
+    Takes in a list of coordinates, which is passed in its raw format
+    from the query parameters.
+    Each of them should be a tuple
     """
     # process the parameters
     points = map(process, locations)

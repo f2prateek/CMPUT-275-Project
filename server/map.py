@@ -1,10 +1,9 @@
 """
 Map module for working with map data.
 
-It reads in map data from a file.
-Each line in the file contains either a vertex or an edge
-in the following format.
-
+Reads in map data from a file.
+Each line in the file must contain either a vertex or an edge.
+This data should be in the format:
 V(ertex),{id},{latitude},{longitude}
 e.g. V,30198538,53.618369,-113.602987
 
@@ -14,10 +13,11 @@ e.g. E,314080060,314080061,23 Avenue NW
 
 from graph import Graph
 
+# Utility functions
 def straight_line_dist(lat1, lon1, lat2, lon2):
     """
-    Computes the straightline distance between
-    two points (lat1, lon1) and (lat2, lon2)
+    Computes the straight line distance between
+    two given points (lat1, lon1) and (lat2, lon2)
     """
     return ((lat2-lat1)**2 + (lon2-lon1)**2)**0.5
 
@@ -25,9 +25,9 @@ def straight_line_dist(lat1, lon1, lat2, lon2):
 def join_path(dest, source):
     """
     Copy a source path into a destination path.
-    This is different from simply extending, since if dest isn't empty
-    it's last location is same as the source's start location.
-    This method takes care of this case.
+    If the destination is empty, simply copy source into it.
+    If not, copy all elements from source into dest except the first one.
+    This is to take care of having duplicate nodes.
     """
     if len(dest) == 0:
         dest = source
@@ -202,8 +202,7 @@ class Map:
         Call get_path with this path to get a more useful path.
         [(5365488,-11333914),(5365488,-11333914),(5365488,-11333914)]
         """
-        # Map the locations to their nearest vertex ids
-        # vertices = [123, 344, 13213, 213]
+        # Map the locations from coordinates to their nearest vertex ids
         vertices = [self.find_closest_vertex(location[0], location[1]) for location in locations]
 
         return self._find_path_with_vertex_ids(vertices)
@@ -221,8 +220,7 @@ class Map:
         locations is a list of coordinates in the format
         [(5365488,-11333914),(5365488,-11333914),(5365488,-11333914)]
         """
-        # Map the locations to their nearest vertex ids
-        # points = [123, 344, 13213, 213]
+        # Map the locations from coordinates to their nearest vertex ids
         vertices = [self.find_closest_vertex(location[0], location[1]) for location in locations]
 
         current = vertices.pop(0)
@@ -244,7 +242,7 @@ class Map:
                     nearest_path = path
                     nearest_vert = vertex
 
-            # remove it and add the path to the greedy_path
+            # remove the vertex and add the path to the greedy_path
             current = nearest_vert
             vertices.remove(current)
             join_path(greedy_path, nearest_path['path'])
