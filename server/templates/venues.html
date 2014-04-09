@@ -87,11 +87,15 @@
                     },
                     properties: {
                         title: {{ venue['name']|tojson|safe }},
-                    // one can customize markers by adding simplestyle properties
-                    // http://mapbox.com/developers/simplestyle/
-                    'marker-size': 'small',
-                    'marker-color': '#0099cc'
-                }
+                        name: {{ venue['name']|tojson|safe }},
+                        hereNow: {{ venue['hereNow']['summary']|tojson|safe }},
+                        tipCount: {{ venue['stats']['tipCount']|tojson|safe }},
+                        checkinsCount: {{ venue['stats']['checkinsCount']|tojson|safe }},
+                        // one can customize markers by adding simplestyle properties
+                        // http://mapbox.com/developers/simplestyle/
+                        'marker-size': 'small',
+                        'marker-color': '#0099cc'
+                    }
                 }
                 {% if not loop.last %}
                 ,
@@ -110,6 +114,17 @@
             featureLayer.on('mouseout', function(e) {
                 e.layer.closePopup();
             });
+            
+            var customPopup = function(layer) {
+                // properties declared above are available under `layer.feature.properties`
+                var content = '<h1>' +
+                    '<span class=\"badge\">' + layer.feature.properties.tipCount + '<\/span>' +
+                    '<strong>' + layer.feature.properties.name + '<\/strong>' +
+                    '<\/h1>' +
+                    '<p class=\"text-info\">' + layer.feature.properties.hereNow + '<\/p>';
+                layer.bindPopup(content);
+            };
+            featureLayer.eachLayer(customPopup);
 
             featureLayer.on('click',function(e) {		
                 if(e.layer.feature.properties['selected']) {
@@ -121,7 +136,7 @@
                     e.layer.feature.properties['marker-color'] = '#006080';	
                 }
                 featureLayer.setGeoJSON(geoJson);
-                console.log(e);
+                featureLayer.eachLayer(customPopup);
             });
 
             route.onclick = function (e) {
