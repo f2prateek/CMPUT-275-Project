@@ -71,7 +71,7 @@ class Map:
                 if(elements[0] == "V"):
                     self._graph.add_vertex(int(elements[1]))
                     self._location[int(elements[1])] = (self.process_coord(elements[2]),
-                                                  self.process_coord(elements[3]))
+                                                        self.process_coord(elements[3]))
                 elif (elements[0] == "E"):
                     self._graph.add_edge((int(elements[1]), int(elements[2])))
                     self._streetnames[(int(elements[1]), int(elements[2]))] = elements[3]
@@ -151,17 +151,17 @@ class Map:
             todo.remove(current)
 
             for neighbour in graph.neighbours(current):
-                #if neighbour isn't in est_min_cost, that means I haven't seen it before,
-                #which means I should add it to my todo list and initialize my lowest
-                #estimated cost and set it's parent
-                if not neighbour in est_min_cost:
+                # if neighbour isn't in est_min_cost, that means I haven't seen it before,
+                # which means I should add it to my todo list and initialize my lowest
+                # estimated cost and set it's parent
+                if neighbour not in est_min_cost:
                     todo.add(neighbour)
                     est_min_cost[neighbour] = (est_min_cost[current] + cost((current, neighbour)))
                     parents[neighbour] = current
                 elif est_min_cost[neighbour] > (est_min_cost[current] + cost((current, neighbour))):
-                    #If my neighbour isn't new, then I should check if my previous lowest cost path
-                    #is worse than a path going through vertex current. If it is, I will update
-                    #my cost and record current as my new parent.
+                    # If my neighbour isn't new, then I should check if my previous lowest cost path
+                    # is worse than a path going through vertex current. If it is, I will update
+                    # my cost and record current as my new parent.
                     est_min_cost[neighbour] = (est_min_cost[current] + cost((current, neighbour)))
                     parents[neighbour] = current
 
@@ -169,7 +169,8 @@ class Map:
 
     # Find closest vertices to the provided lat and lon positions
     def find_closest_vertex(self, lat, lon):
-        return min(self._location, key=lambda v:straight_line_dist(lat, lon, self._location[v][0], self._location[v][1]))
+        return min(self._location, key=lambda v: straight_line_dist(lat, lon, self._location[v][0],
+                                        self._location[v][1]))
 
     # Define our cost_distance function that takes in an edge e = (vertexid, vertexid)
     def cost_distance(self, e):
@@ -193,7 +194,7 @@ class Map:
             path['path'] = join_path(path['path'], node_path['path'])
 
         return path
-            
+
     def find_path(self, locations):
         """
         Find a path from the start coordinates to the end coordinates.
@@ -206,7 +207,7 @@ class Map:
         vertices = [self.find_closest_vertex(location[0], location[1]) for location in locations]
 
         return self._find_path_with_vertex_ids(vertices)
-    
+
     def find_optimized_path(self, locations):
         """
         Find an optimized path to travel through the given list.
@@ -229,26 +230,26 @@ class Map:
 
         while vertices:
             nearest_vert = None
-            nearest_path = {'path':list(), 'cost':float("inf")}
+            nearest_path = {'path': list(), 'cost': float("inf")}
 
-            #find the vertex nearest to current
+            # find the vertex nearest to current
             for vertex in vertices:
                 route = list()
                 route.append(current)
                 route.append(vertex)
-                #look up the path from current to this vertex
+                # look up the path from current to this vertex
                 path = self._find_path_with_vertex_ids(route)
                 # check if this path is better than our old estimate
                 if path['cost'] < nearest_path['cost']:
                     nearest_path = path
                     nearest_vert = vertex
 
-            #remove it and add the path to the greedy_path
+            # remove it and add the path to the greedy_path
             current = nearest_vert
             vertices.remove(current)
             join_path(greedy_path, nearest_path['path'])
 
-        return {'path':greedy_path, 'length':len(greedy_path)}
+        return {'path': greedy_path, 'length': len(greedy_path)}
 
     def get_path(self, path):
         """
@@ -260,20 +261,20 @@ class Map:
         points = list()
         # convert the coordinates in a way that the clients can understand
         def process(val):
-          return float(val)/100000
+            return float(val)/100000
         for v in path:
-          points.append((process(self._location[v][0]), process(self._location[v][1])))
+            points.append((process(self._location[v][0]), process(self._location[v][1])))
 
         return {'length': len(points), 'path': points}
-    
+
     def minify_path(self, path):
         """
         Minify a path such that points on the same line are removed.
-        This is limited when travelling diagonally. It's not broken, 
+        This is limited when travelling diagonally. It's not broken,
         but it tends to go off road.
         e.g. http://localhost:5000/route?location=(53.65488,-113.33914)&location=(53.65035,-113.35026)&location=(53.64727,-113.35890)
         """
-        
+
         def get_direction(start, end):
             """
             Get the cardinal direction to travel in between two coordinates.
@@ -288,7 +289,7 @@ class Map:
             # use the pair with the greater delta for direction
             if abs(dy) > abs(dx):
                 # use longitude
-                if dy < 0 :
+                if dy < 0:
                     return 'south'
                 else:
                     return 'north'

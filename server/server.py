@@ -6,7 +6,9 @@ import json
 app = Flask(__name__)
 app.secret_key = "ZjBjNTUzNWIyMmZmNDRkZGVmYzU5NDY2"
 
-foursquare = Foursquare(client_id='IGJS4FY0IXWLVJVG0IE0IFGIGBVT2HDBK1QAQYMP4WU2VKOE', client_secret='W3SBDEHHTCX2YUSD30Z1RUDIEBJRN3PHTVC0OVBZ0OBGHICK')
+CLIENT_ID = 'IGJS4FY0IXWLVJVG0IE0IFGIGBVT2HDBK1QAQYMP4WU2VKOE'
+CLIENT_SECRET = 'W3SBDEHHTCX2YUSD30Z1RUDIEBJRN3PHTVC0OVBZ0OBGHICK'
+foursquare = Foursquare(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 graphMap = Map("edmonton-roads-2.0.1.txt")
 
 @app.route("/api/venues")
@@ -17,7 +19,6 @@ def api_venues():
     """
     location = eval(request.args.get('location', '(0, 0)'))
     query = request.args.get('query', '')
-    
     response = fetch_nearby_foursquare_locations(location, query)
     return json.dumps(response)
 
@@ -30,14 +31,13 @@ def api_route():
     /route?location=(53.65488,-113.33914)&location=(53.65035,-113.35026)&location=(53.64727,-113.35890)
     """
     locations = request.values.getlist('location')
-    
     route = fetch_route(locations)
+
     def process(location):
-        return {'lat':location[0], 'lng':location[1]}
+        return {'lat': location[0], 'lng': location[1]}
+
     path = map(process, route['path'])
-    
-    response = {'path':path, 'length':len(path)}
-    
+    response = {'path': path, 'length': len(path)}
     return json.dumps(response)
 
 @app.route("/")
@@ -48,10 +48,8 @@ def home():
 def venues():
     location = eval(request.args.get('location', '(0, 0)'))
     query = request.args.get('query', '')
-
     response = fetch_nearby_foursquare_locations(location, query)
     venues = response['venues']
-    
     return render_template('venues.html', location=location, venues=venues)
 
 @app.route("/route")
@@ -63,13 +61,13 @@ def route():
     http://localhost:5000/route?location=(53.51031,-113.50926)&location=(53.49978,-113.50025)&location=(53.50339,-113.50438)&location=(53.50746,-113.50926)
     """
     locations = request.values.getlist('location')
-    
-    path = fetch_route(locations)
+    path = fetch_route(locations)['path']
 
     def process(location):
-	return eval(location)
-    
-    return render_template('route.html', path=path['path'], locations=map(process, locations))
+        return eval(location)
+
+    locations = map(process, locations)
+    return render_template('route.html', path=path, locations=locations)
 
 def fetch_route(locations):
     """
@@ -89,8 +87,10 @@ def fetch_nearby_foursquare_locations(location, query=''):
     Takes in a coordinate, which is a tuple in the format (lat, lng)
     """
     ll = u'' + str(location[0]) + ',' + str(location[1])
-    #10km radius
-    return foursquare.venues.search(params={'ll': ll, 'intent': 'browse', 'query':query, 'radius':100000})
+
+    # 10km radius
+    params = {'ll': ll, 'intent': 'browse', 'query': query, 'radius': 100000}
+    return foursquare.venues.search(params=params)
 
 def process(location):
     """
@@ -98,7 +98,9 @@ def process(location):
     '(53.65488,-113.33914)' >>> (5365488,-11333914)
     """
     location = eval(location)
-    return (graphMap.process_coord(location[0]), graphMap.process_coord(location[1]))
+    l1 = graphMap.process_coord(location[0])
+    l2 = graphMap.process_coord(location[1])
+    return (l1, l2)
 
 def debug(msg):
     """
@@ -108,4 +110,4 @@ def debug(msg):
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
-    #app.run(debug=True)
+    # app.run(debug=True)
