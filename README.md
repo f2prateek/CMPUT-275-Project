@@ -36,6 +36,9 @@ This is optional, but recommended.
 
 For future invocations, just execute the bundled `run.sh` file
 
+### Deploy to heroku
+From the root of the project, run `git subtree push --prefix server heroku master`
+
 ## Android Client
 
 ### Install JDK
