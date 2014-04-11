@@ -1,10 +1,10 @@
 # Router
 
-Live at https://vast-lowlands-8551.herokuapp.com
-
-Download Android App at http://cl.ly/2O0c141M3x05
-
 By Prateek Srivastava and David Woodruff
+
+##### *Live at https://vast-lowlands-8551.herokuapp.com*
+
+##### *Download Android App at http://cl.ly/2O0c141M3x05*
 
 Router is a web app that will display a map of venues from Foursquare closest to the user.
 Users can see a quick overview of the venues, with information such as location (from the map),
